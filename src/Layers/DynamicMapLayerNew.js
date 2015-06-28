@@ -1,4 +1,4 @@
-SolrSpatialDynamicLayer = EsriLeaflet.Layers.RasterLayerNew.extend({
+EsriLeaflet.Layers.DynamicMapLayerNew = EsriLeaflet.Layers.RasterLayerNew.extend({
 
   options: {
     updateInterval: 150,
@@ -11,7 +11,7 @@ SolrSpatialDynamicLayer = EsriLeaflet.Layers.RasterLayerNew.extend({
   },
 
   initialize: function (url, options) {
-  options = options || {};
+    options = options || {};
     options.url = EsriLeaflet.Util.cleanUrl(url);
     this._service = new EsriLeaflet.Services.MapService(options);
     this._service.on('authenticationrequired requeststart requestend requesterror requestsuccess', this._propagateEvent, this);
@@ -20,9 +20,7 @@ SolrSpatialDynamicLayer = EsriLeaflet.Layers.RasterLayerNew.extend({
     }
     L.Util.setOptions(this, options);
   },
-  alertTest:function() {
-    alert('alertest');
-  },
+
   getLayers: function(){
     return this.options.layers;
   },
@@ -43,49 +41,49 @@ SolrSpatialDynamicLayer = EsriLeaflet.Layers.RasterLayerNew.extend({
     return this;
   },
 
-  // getTimeOptions: function(){
-  //   return this.options.timeOptions;
-  // },
+  getTimeOptions: function(){
+    return this.options.timeOptions;
+  },
 
-  // setTimeOptions: function(timeOptions){
-  //   this.options.timeOptions = timeOptions;
-  //   this._update();
-  //   return this;
-  // },
+  setTimeOptions: function(timeOptions){
+    this.options.timeOptions = timeOptions;
+    this._update();
+    return this;
+  },
 
-  // query: function(){
-  //   return this._service.query();
-  // },
+  query: function(){
+    return this._service.query();
+  },
 
-  // identify: function(){
-  //   return this._service.identify();
-  // },
+  identify: function(){
+    return this._service.identify();
+  },
 
-  // find: function(){
-  //   return this._service.find();
-  // },
+  find: function(){
+    return this._service.find();
+  },
 
-  // _getPopupData: function(e){
-  //   var callback = L.Util.bind(function(error, featureCollection, response) {
-  //     setTimeout(L.Util.bind(function(){
-  //       this._renderPopup(e.latlng, error, featureCollection, response);
-  //     }, this), 300);
-  //   }, this);
+  _getPopupData: function(e){
+    var callback = L.Util.bind(function(error, featureCollection, response) {
+      setTimeout(L.Util.bind(function(){
+        this._renderPopup(e.latlng, error, featureCollection, response);
+      }, this), 300);
+    }, this);
 
-  //   var identifyRequest = this.identify().on(this._map).at(e.latlng);
+    var identifyRequest = this.identify().on(this._map).at(e.latlng);
 
-  //   if(this.options.layers){
-  //     identifyRequest.layers('visible:' + this.options.layers.join(','));
-  //   } else {
-  //     identifyRequest.layers('visible');
-  //   }
+    if(this.options.layers){
+      identifyRequest.layers('visible:' + this.options.layers.join(','));
+    } else {
+      identifyRequest.layers('visible');
+    }
 
-  //   identifyRequest.run(callback);
+    identifyRequest.run(callback);
 
-  //   // set the flags to show the popup
-  //   this._shouldRenderPopup = true;
-  //   this._lastClick = e.latlng;
-  // },
+    // set the flags to show the popup
+    this._shouldRenderPopup = true;
+    this._lastClick = e.latlng;
+  },
 
   _buildExportParams: function () {
     var bounds = this._map.getBounds();
@@ -135,33 +133,23 @@ SolrSpatialDynamicLayer = EsriLeaflet.Layers.RasterLayerNew.extend({
   },
 
   _requestExport: function (params, bounds) {
-
-    this._addSolrSpatialMarkersGeoJson(params, bounds);
-    // if(this.options.f === 'json'){
-    //   this._service.get('export', params, function(error, response){
-    //     this._renderImage(response.href, bounds);
-    //   }, this);
-    // } else {
-    //   params.f = 'image';
-    //   this._renderImage(this.options.url + 'export' + L.Util.getParamString(params), bounds);
-    // }
+    if(this.options.f === 'json'){
+      this._service.get('export', params, function(error, response){
+        this._renderImage(response.href, bounds);
+      }, this);
+    } else {
+      params.f = 'image';
+      this._renderImage(this.options.url + 'export' + L.Util.getParamString(params), bounds);
+    }
   }
 });
 
-//SolrSpatialDynamicLayer = SolrSpatialDynamicLayer;
+EsriLeaflet.DynamicMapLayer = EsriLeaflet.Layers.DynamicMapLayer;
 
-solrSpatialDynamicLayer = function(url, options){
- // alert('aaaa');
-  return new SolrSpatialDynamicLayer(url, options);
+EsriLeaflet.Layers.dynamicMapLayer = function(url, options){
+  return new EsriLeaflet.Layers.DynamicMapLayer(url, options);
 };
 
-
-solrSpatialDynamicLayerTEST = function(url, options){
-  alert('bbbb');
- // return new SolrSpatialDynamicLayer(url, options);
+EsriLeaflet.dynamicMapLayer = function(url, options){
+  return new EsriLeaflet.Layers.DynamicMapLayer(url, options);
 };
-
-
-// solrSpatialDynamicLayer = function(url, options){
-//   return new SolrSpatialDynamicLayer(url, options);
-// };
